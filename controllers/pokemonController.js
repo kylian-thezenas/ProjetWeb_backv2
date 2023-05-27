@@ -17,26 +17,29 @@ module.exports.allPokemons = (req, res) => {
 
 
 module.exports.addPokemon = async (req, res) => {
+    if (req.auth.userRole == 'admin') {
+        const type = await typeModel.findOne({ name: req.body.type });
+            if (!type) {
+                return res.status(404).send({ message: 'type not found' });
+            }
 
-    const type = await typeModel.findOne({ name: req.body.type });
-        if (!type) {
-            return res.status(404).send({ message: 'type not found' });
+        const newPokemon = new pokemonModel({
+            number: req.body.number,
+            name: req.body.name,
+            type: req.body.type,
+            description: req.body.description,
+            image: req.body.image,
+        });
+        try{
+            const pokemon = await newPokemon.save();
+            console.log(pokemon);
+            return res.status(201).json(pokemon);
+
+        }catch(err){
+            return res.status(400).json({message: "Erreur lors de l'ajout du pokémon"});
         }
-
-    const newPokemon = new pokemonModel({
-        number: req.body.number,
-        name: req.body.name,
-        type: req.body.type,
-        description: req.body.description,
-        image: req.body.image,
-    });
-    try{
-        const pokemon = await newPokemon.save();
-        console.log(pokemon);
-        return res.status(201).json(pokemon);
-
-    }catch(err){
-        return res.status(400).json({message: "Erreur lors de l'ajout du pokémon"});
+    }else{ 
+        return res.status(401).send({message: "Vous n'avez pas les droits pour ajouter un pokémon"})
     }
 }
 

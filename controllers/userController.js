@@ -71,8 +71,9 @@ module.exports.connexion = async (req, res) => {
       }
       return res.status(200).json({
         userName: user.name,
+        userRole: user.role,
         token: jwt.sign(
-          { userName: user.name },
+          { userName: user.name, userRole: user.role },
           process.env.TOKEN_SECRET,
           { expiresIn: '1h' })
       });

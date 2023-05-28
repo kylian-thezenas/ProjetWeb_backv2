@@ -55,21 +55,29 @@ module.exports.getPokemon = async (req, res) => {
 }
 
 module.exports.updatePokemon = async (req, res) => {
-    const query = {number: req.params.number};
-    try{
-        const pokemon = await pokemonModel.findOneAndUpdate(query, req.body, {new: true});
-        return res.status(200).json(pokemon);
-    }catch(err){
-        return res.status(400).json({message: "Erreur lors de la mise à jour du pokémon"});
+    if (req.auth.userRole == 'admin') {
+        const query = {number: req.params.number};
+        try{
+            const pokemon = await pokemonModel.findOneAndUpdate(query, req.body, {new: true});
+            return res.status(200).json(pokemon);
+        }catch(err){
+            return res.status(400).json({message: "Erreur lors de la mise à jour du pokémon"});
+        }
+    }else{
+        return res.status(401).send({message: "Vous n'avez pas les droits pour modifier un pokémon"})
     }
 }
 
 module.exports.deletePokemon = async (req, res) => {
-    const query = {number: req.params.number};
-    try{
-        const pokemon = await pokemonModel.findOneAndDelete(query);
-        return res.status(200).json(pokemon);
-    }catch(err){
-        return res.status(400).json({message: "Erreur lors de la suppression du pokémon"});
+    if (req.auth.userRole == 'admin'){
+        const query = {number: req.params.number};
+        try{
+            const pokemon = await pokemonModel.findOneAndDelete(query);
+            return res.status(200).json(pokemon);
+        }catch(err){
+            return res.status(400).json({message: "Erreur lors de la suppression du pokémon"});
+        }
+    }else{
+        return res.status(401).send({message: "Vous n'avez pas les droits pour supprimer un pokémon"})
     }
 }

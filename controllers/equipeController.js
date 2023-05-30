@@ -62,9 +62,9 @@ module.exports.addEquipe = async (req, res) => {
 }
 
 module.exports.getEquipe = async (req, res) => {
-    const query = { name: req.params.name };
+    const query = { nameDresseur: req.params.name };
     try {
-        const equipe = await equipeModel.find(query);
+        const equipe = await equipeModel.findOne(query);
         return res.status(200).json(equipe);
     } catch (err) {
         return res.status(400).json({ message: "Erreur lors de la récupération de l'équipe" });
